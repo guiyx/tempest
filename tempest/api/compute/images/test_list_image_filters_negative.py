@@ -38,6 +38,14 @@ class ListImageFiltersNegativeTestJSON(base.BaseV2ComputeTest):
         self.assertRaises(exceptions.NotFound, self.client.get_image,
                           nonexistent_image)
 
+    def test_list_detail_filter_by_status(self):
+        params = {'status': 'BALONEY'}
+        resp, images = self.client.list_images_with_detail(params)
+        self.assertEqual('200', resp['status'])
+        self.assertEqual([], images)
+
+    def test_list_detail(self):
+        resp, images = self.client.list_images_with_detail()
 
 class ListImageFiltersNegativeTestXML(ListImageFiltersNegativeTestJSON):
     _interface = 'xml'

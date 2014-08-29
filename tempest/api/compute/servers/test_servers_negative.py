@@ -132,6 +132,14 @@ class ServersNegativeTestJSON(base.BaseV2ComputeTest):
         # Resize a server with null flavor
         self.assertRaises(exceptions.BadRequest, self.client.resize,
                           self.server_id, flavor_ref="")
+    def test_resize_confirm_server(self):
+        nonexistent_server = "wrong"
+        self.assertRais(exceptions.NotFound,self.client.confirm_resize,
+                        nonexistent_server)
+
+    def test_resize_revert_server(self):
+        nonexistent_server = "wrong"
+        self.assertRaises(exceptions.NotFound,self.client.revert_resize,nonexistent_server)
 
     @test.attr(type=['negative', 'gate'])
     def test_reboot_non_existent_server(self):
@@ -258,6 +266,9 @@ class ServersNegativeTestJSON(base.BaseV2ComputeTest):
         self.assertRaises(exceptions.NotFound,
                           self.alt_client.update_server, self.server_id,
                           name=new_name)
+    def test_update_server_of_ip(self):
+        IPv4 = '1.1.1.1.1.1'
+        self.assertRaises(exceptions.BadRequest,self.alt_client.update_server,self.server_id,accessIPv4=IPv4)
 
     @test.attr(type=['negative', 'gate'])
     def test_update_server_name_length_exceeds_256(self):

@@ -12,7 +12,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+import cStringIO as StringIO
 from tempest.api.image import base
 from tempest import exceptions
 from tempest import test
@@ -68,3 +68,28 @@ class CreateDeleteImagesNegativeTest(base.BaseV1ImageTest):
         # Return an error while trying to delete image with id over limit
         self.assertRaises(exceptions.NotFound, self.client.delete_image,
                           '11a22b9-12a9-5555-cc11-00ab112223fa-3fac')
+
+    def test_register_then_upload(self):
+        properties = {'prop1': 'val1'}
+        _, body = self.create_image(name='New Name',
+                                    container_format='bare',
+                                    disk_format='raw',
+                                    is_public=False,
+                                    properties=properties)
+        self.assertIn('id', body)
+        image_id = body.get('id')
+        self.assertEqual('New Name', body.get('name'))
+        self.assertFalse(body.get('is_public'))
+        self.assertEqual('queued', body.get('status'))
+        for key, val in properties.items():
+            self.assertEqual(val, body.get('properties')[key])
+
+        # Now try uploading an image file
+        image_file = StringIO.StringIO(('*' * 1024))
+        self.assertRaises(exceptions.NotFound,self.client.update_image,"wrong",data=image_file)
+
+    def test_list_disk_format(self):
+
+        _, images_list = self.client.image_list(disk_format='error')
+        for image in images_list:
+            self.assertEqual(image['disk_format'], 'error')

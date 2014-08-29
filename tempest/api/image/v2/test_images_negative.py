@@ -16,10 +16,13 @@
 
 import uuid
 
+import cStringIO as StringIO
+import random
+
 from tempest.api.image import base
 from tempest import exceptions
 from tempest import test
-
+from tempest.common.utils import data_utils
 
 class ImagesNegativeTest(base.BaseV2ImageTest):
 
@@ -41,6 +44,20 @@ class ImagesNegativeTest(base.BaseV2ImageTest):
         non_existent_id = str(uuid.uuid4())
         self.assertRaises(exceptions.NotFound, self.client.get_image,
                           non_existent_id)
+    def test_get_image_file(self):
+        self.assertRaises(exceptions.NotFound,self.client.get_image_file,"wrong")
+
+    def test_list_images_param_limit(self):
+        params = {"limiter": 2}
+        _, images_list = self.client.image_list(params=params)
+        self.assertNotEqual(len(images_list), params['limiter'],
+                         "Failed to get images by limit")
+    def test_list_image(self):
+        params = {"containererror": "wrong"}
+        _, images_list = self.client.image_list(params)
+        for image in images_list:
+            for key in params:
+                self.assertEqual(params[key], image[key],"Failed to list images by key")
 
     @test.attr(type=['negative', 'gate'])
     def test_get_image_null_id(self):
@@ -90,3 +107,16 @@ class ImagesNegativeTest(base.BaseV2ImageTest):
     def test_register_with_invalid_disk_format(self):
         self.assertRaises(exceptions.BadRequest, self.client.create_image,
                           'test', 'bare', 'wrong')
+    def test_update_image(self):
+
+        image_id=""
+        new_image_name=data_utils.rand_name('new-image')
+        self.assertRaises(exceptions.NotFound, self.client.update_image,image_id,
+                          [dict(replace='/name',value=new_image_name)])
+
+    def test_upload_image(self):
+
+        image_id="wrong"
+        file_content = '*' * 1024
+        image_file = StringIO.StringIO(file_content)
+        self.client.store_image(image_id, image_file)
