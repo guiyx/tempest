@@ -50,6 +50,7 @@ class ImageMembersNegativeTest(base.BaseV1ImageMembersTest):
         self.assertRaises(exceptions.NotFound,
                           self.alt_img_cli.get_image,
                           image_id)
+
     @test.attr(type=['negative', 'gate'])
     def test_set_membership_without_image(self):
         membership={

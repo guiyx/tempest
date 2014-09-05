@@ -149,6 +149,7 @@ class ListServersNegativeTestJSON(base.BaseV2ComputeTest):
         self.assertEqual('200', resp['status'])
         self.assertEqual([], actual)
 
+    @test.attr(type=['negative', 'gate'])
     def test_list_detail_filter_by_status(self):
         non_existing_status = 'BALONEY'
         resp, body = self.client.list_servers_with_detail(dict(status=non_existing_status))

@@ -27,6 +27,8 @@ class ImagesMemberNegativeTest(base.BaseV2MemberImageTest):
         self.assertRaises(exceptions.BadRequest,
                           self.alt_img_client.update_member_status,
                           image_id, self.alt_tenant_id, 'notavalidstatus')
+
+    @test.attr(type=['negative', 'gate'])
     def test_image_share_accept(self):
         image_id = self._create_image()
         _, member = self.os_img_client.add_member(image_id,
@@ -41,34 +43,33 @@ class ImagesMemberNegativeTest(base.BaseV2MemberImageTest):
         self.assertRaises(exceptions.BadRequest,
                           self.alt_img_client.update_member_status,
                           image_id, self.alt_tenant_id, 'notavalidstatus')
+
+    @test.attr(type=['negative', 'gate'])
     def test_add_image_member(self):
         image_id = self._create_image()
-        self.os_img_client.add_member(image_id,
-                                      self.alt_tenant_id)
+        self.os_img_client.add_member(image_id,self.alt_tenant_id)
         self.assertRaises(exceptions.NotFound,self.alt_img_client.add_member,
                           "wrong", self.alt_tenant_id)
 
+    @test.attr(type=['negative', 'gate'])
     def test_get_image_member(self):
         image_id = self._create_image()
-        self.os_img_client.add_member(image_id,
-                                      self.alt_tenant_id)
+        self.os_img_client.add_member(image_id,self.alt_tenant_id)
         self.alt_img_client.update_member_status(image_id,
                                                  self.alt_tenant_id,
                                                  'accepted')
         self.assertIn(image_id, self._list_image_ids_as_alt())
-        _, member = self.os_img_client.get_member(image_id,
-                                                  self.alt_tenant_id)
+        _, member = self.os_img_client.get_member(image_id,self.alt_tenant_id)
         self.assertEqual(self.alt_tenant_id, member['member_id'])
         self.assertEqual(image_id, member['image_id'])
         self.assertEqual('accepted', member['status'])
         self.assertRaises(exceptions.NotFound,self.alt_img_client.get_member,
                           "wrong", self.alt_tenant_id)
 
+    @test.attr(type=['negative', 'gate'])
     def test_remove_image_member(self):
-
         image_id = self._create_image()
-        self.os_img_client.add_member(image_id,
-                                      self.alt_tenant_id)
+        self.os_img_client.add_member(image_id,self.alt_tenant_id)
         self.alt_img_client.update_member_status(image_id,
                                                  self.alt_tenant_id,
                                                  'accepted')
@@ -77,10 +78,11 @@ class ImagesMemberNegativeTest(base.BaseV2MemberImageTest):
         self.assertNotIn(image_id, self._list_image_ids_as_alt())
         self.assertRaises(exceptions.NotFound,self.alt_img_client.remove_member,
                           "wrong", self.alt_tenant_id)
+
+    @test.attr(type=['negative', 'gate'])
     def test_image_get(self):
         image_id = self._create_image()
-        _, member = self.os_img_client.add_member(image_id,
-                                                  self.alt_tenant_id)
+        _, member = self.os_img_client.add_member(image_id,self.alt_tenant_id)
         self.assertEqual(member['member_id'], self.alt_tenant_id)
         self.assertEqual(member['image_id'], image_id)
         self.assertEqual(member['status'], 'pending')
@@ -99,16 +101,19 @@ class ImagesMemberNegativeTest(base.BaseV2MemberImageTest):
         self.assertRaises(exceptions.NotFound,self.alt_img_client.get_image_membership,
                           "wrong")
 
+    @test.attr(type=['negative', 'gate'])
     def test_get_image_member_schema(self):
         _, body = self.os_img_client.get_schema("member")
         self.assertEqual("member", body['name'])
         self.assertRaises(exceptions.NotFound,self.os_img_client.get_schema,"wrong")
 
+    @test.attr(type=['negative', 'gate'])
     def test_get_image_members_schema(self):
         _, body = self.os_img_client.get_schema("members")
         self.assertEqual("members", body['name'])
         self.assertRaises(exceptions.NotFound,self.os_img_client.get_schema,"wrong")
 
+    @test.attr(type=['negative', 'gate'])
     def test_get_image_schema(self):
         # Test to get image schema
         schema = "image"
@@ -116,6 +121,7 @@ class ImagesMemberNegativeTest(base.BaseV2MemberImageTest):
         self.assertEqual("image", body['name'])
         self.assertRaises(exceptions.NotFound,self.os_img_client.get_schema,"wrong")
 
+    @test.attr(type=['negative', 'gate'])
     def test_get_images_schema(self):
         # Test to get images schema
         schema = "images"

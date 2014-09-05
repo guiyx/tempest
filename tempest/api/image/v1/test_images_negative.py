@@ -69,6 +69,7 @@ class CreateDeleteImagesNegativeTest(base.BaseV1ImageTest):
         self.assertRaises(exceptions.NotFound, self.client.delete_image,
                           '11a22b9-12a9-5555-cc11-00ab112223fa-3fac')
 
+    @test.attr(type=['negative', 'gate'])
     def test_register_then_upload(self):
         properties = {'prop1': 'val1'}
         _, body = self.create_image(name='New Name',
@@ -83,13 +84,13 @@ class CreateDeleteImagesNegativeTest(base.BaseV1ImageTest):
         self.assertEqual('queued', body.get('status'))
         for key, val in properties.items():
             self.assertEqual(val, body.get('properties')[key])
-
         # Now try uploading an image file
         image_file = StringIO.StringIO(('*' * 1024))
-        self.assertRaises(exceptions.NotFound,self.client.update_image,"wrong",data=image_file)
+        self.assertRaises(exceptions.NotFound,self.client.update_image,
+                          "wrong",data=image_file)
 
+    @test.attr(type=['negative', 'gate'])
     def test_list_disk_format(self):
-
         _, images_list = self.client.image_list(disk_format='error')
         for image in images_list:
             self.assertEqual(image['disk_format'], 'error')

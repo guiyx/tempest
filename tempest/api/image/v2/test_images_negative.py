@@ -44,14 +44,19 @@ class ImagesNegativeTest(base.BaseV2ImageTest):
         non_existent_id = str(uuid.uuid4())
         self.assertRaises(exceptions.NotFound, self.client.get_image,
                           non_existent_id)
+
+    @test.attr(type=['negative', 'gate'])
     def test_get_image_file(self):
         self.assertRaises(exceptions.NotFound,self.client.get_image_file,"wrong")
 
+    @test.attr(type=['negative', 'gate'])
     def test_list_images_param_limit(self):
         params = {"limiter": 2}
         _, images_list = self.client.image_list(params=params)
         self.assertNotEqual(len(images_list), params['limiter'],
                          "Failed to get images by limit")
+
+    @test.attr(type=['negative', 'gate'])
     def test_list_image(self):
         params = {"containererror": "wrong"}
         _, images_list = self.client.image_list(params)
@@ -75,10 +80,8 @@ class ImagesNegativeTest(base.BaseV2ImageTest):
         image_id = body['id']
         self.client.delete_image(image_id)
         self.client.wait_for_resource_deletion(image_id)
-
         # get the deleted image
         self.assertRaises(exceptions.NotFound, self.client.get_image, image_id)
-
         # delete the deleted image
         self.assertRaises(exceptions.NotFound, self.client.delete_image,
                           image_id)
@@ -107,15 +110,16 @@ class ImagesNegativeTest(base.BaseV2ImageTest):
     def test_register_with_invalid_disk_format(self):
         self.assertRaises(exceptions.BadRequest, self.client.create_image,
                           'test', 'bare', 'wrong')
-    def test_update_image(self):
 
+    @test.attr(type=['negative', 'gate'])
+    def test_update_image(self):
         image_id=""
         new_image_name=data_utils.rand_name('new-image')
         self.assertRaises(exceptions.NotFound, self.client.update_image,image_id,
                           [dict(replace='/name',value=new_image_name)])
 
+    @test.attr(type=['negative', 'gate'])
     def test_upload_image(self):
-
         image_id="wrong"
         file_content = '*' * 1024
         image_file = StringIO.StringIO(file_content)

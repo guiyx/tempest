@@ -41,8 +41,10 @@ class MultipleCreateNegativeTestJSON(base.BaseV2ComputeTest):
         self.assertRaises(exceptions.BadRequest, self._create_multiple_servers,
                           min_count=invalid_min_count)
 
+    @test.attr(type=['negative', 'gate'])
     def test_return_reservation(self):
-        self.assertRaises(exceptions.BadRequest,self._create_multiple_servers,wait_until='ACTIVE',max_count=2,min_count=1)
+        self.assertRaises(exceptions.BadRequest,self._create_multiple_servers,
+                          wait_until='ACTIVE',max_count=2,min_count=1)
 
     @test.attr(type=['negative', 'gate'])
     def test_min_count_non_integer(self):
